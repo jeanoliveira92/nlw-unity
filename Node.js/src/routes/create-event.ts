@@ -41,9 +41,8 @@ export async function createEvent(app: FastifyInstance) {
                     }
                 })
 
-                if (eventWithSameSlug != null) {
+                if (eventWithSameSlug != null)
                     throw new BadRequest("Another event with same title already exists")
-                }
 
                 const event = await prisma.event.create({
                     data: {
@@ -54,7 +53,6 @@ export async function createEvent(app: FastifyInstance) {
                     }
                 })
 
-                //return { eventId: event.id }
                 return reply.status(201).send({ eventId: event.id })
             })
 }

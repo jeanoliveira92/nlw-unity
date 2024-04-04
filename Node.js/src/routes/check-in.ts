@@ -26,9 +26,8 @@ export async function checkIn(app: FastifyInstance) {
                     }
                 })
 
-                if (attendeeCheckIn !== null) {
-                    throw new BadRequest("Attendeee already checked in!")
-                }
+                if (attendeeCheckIn !== null) 
+                    throw new BadRequest("Attendeee already checked in!")                
 
                 await prisma.checkIn.create({
                     data: {
