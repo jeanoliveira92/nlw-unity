@@ -5,6 +5,7 @@ import { z } from "zod"
 
 import { prisma } from "../lib/prisma"
 import { FastifyInstance } from "fastify";
+import { BadRequest } from "./_errors/bad-request";
 
 export async function getAttendeeBagde(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>()
@@ -13,7 +14,16 @@ export async function getAttendeeBagde(app: FastifyInstance) {
                 params: z.object({
                     attendeeId: z.coerce.number().int(),
                 }),
-                response: {}
+                response: {
+                    200: z.object({
+                        badge: z.object({
+                            name: z.string(),
+                            email: z.string().email(),
+                            eventTitle: z.string(),
+                            checkiInURL: z.string().url()
+                        })
+                    })
+                }
             }
         }
             , async (request, reply) => {
@@ -23,8 +33,8 @@ export async function getAttendeeBagde(app: FastifyInstance) {
                     select: {
                         name: true,
                         email: true,
-                        event:{
-                            select:{
+                        event: {
+                            select: {
                                 title: true
                             }
                         }
@@ -35,11 +45,20 @@ export async function getAttendeeBagde(app: FastifyInstance) {
                 })
 
                 if (attendee == null)
-                    throw new Error("Attendee not found")
+                    throw new BadRequest("Attendee not found")
+
+
+                const baseURL = `${request.protocol}://${request.hostname}`
+
+                const checkiInURL = new URL(`/attendees/${attendeeId}/check-in`, baseURL)
 
                 reply.send({
-                    attendee
+                    badge: {
+                        name: attendee.name,
+                        email: attendee.email,
+                        eventTitle: attendee.event.title,
+                        checkiInURL: checkiInURL.toString()
+                    }
                 })
-
             })
 }

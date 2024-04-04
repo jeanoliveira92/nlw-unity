@@ -80,3 +80,10 @@ CREATE UNIQUE INDEX "attendees_event_id_email_key" ON "attendees"("event_id", "e
 -- CreateIndex
 CREATE UNIQUE INDEX "check_ins_attendeeId_key" ON "check_ins"("attendeeId");
 ```
+
+
+### Comandos Prisma
+
+npx prisma studio - Abre a pagina de visualização e gerenciamento de dados do banco de dados
+npx prisma migrate dev - Roda o schema.prisma e realiza as alterações
+npx prisma db seed - Popula o banco de dados com o seed
