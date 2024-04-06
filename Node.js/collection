@@ -1,0 +1,146 @@
+{
+	"info": {
+		"_postman_id": "08515703-efc2-4e9d-8a47-488f6bd7f382",
+		"name": "Node.js",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5183957",
+		"_collection_link": "https://grey-moon-701762.postman.co/workspace/NLW-Unity~055f236f-8f73-418b-b8b4-ad74b0dd5df3/collection/5183957-08515703-efc2-4e9d-8a47-488f6bd7f382?action=share&source=collection_link&creator=5183957"
+	},
+	"item": [
+		{
+			"name": "Criar um evento",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Unite Winter\",\r\n    \"details\": \"Um evento para quem é apaixonado por programação\",\r\n    \"maximumAttendees\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3333/events",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cadastrar-se em um evento",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Jean Oliveira\",\r\n    \"email\": \"jeancarlosdeoliveira2@outlook.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3333/events/9179ae7f-f720-4d60-a9a8-bc470e20f686/attendees",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"events",
+						"9179ae7f-f720-4d60-a9a8-bc470e20f686",
+						"attendees"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar evento",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3333/events/a69bcd26-836d-4ae6-a51b-cae95c4cad05",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"events",
+						"a69bcd26-836d-4ae6-a51b-cae95c4cad05"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check-in participante",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3333/attendees/1/check-in",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"attendees",
+						"1",
+						"check-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar participante badge",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3333/attendees/1/badge",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"attendees",
+						"1",
+						"badge"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar participantes do evento",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3333/events/a69bcd26-836d-4ae6-a51b-cae95c4cad05/attendees",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"events",
+						"a69bcd26-836d-4ae6-a51b-cae95c4cad05",
+						"attendees"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
