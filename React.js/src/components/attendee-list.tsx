@@ -4,8 +4,7 @@ import { Table } from "./table/table"
 import { TableHeader } from "./table/table-header"
 import { TableCell } from "./table/table-cell"
 import { TableRow } from "./table/table-row"
-import { ChangeEvent, useState } from "react"
-import { attendees } from "../data/attendees"
+import { ChangeEvent, useEffect, useState } from "react"
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
 import relativeTime from "dayjs/plugin/relativeTime"
@@ -13,32 +12,87 @@ import relativeTime from "dayjs/plugin/relativeTime"
 dayjs.extend(relativeTime)
 dayjs.locale("pt-br")
 
+interface Attendee {
+    id: string,
+    name: string,
+    email: string,
+    createdAt: string,
+    checkedInAt: string | null,
+}
+
 export function AttendeeList() {
-    const [searchInput, setSearchInput] = useState("")
-    const [page, setPage] = useState(1)
+    const [searchInput, setSearchInput] = useState(() => {
+        const url = new URL(window.location.toString())
 
-    const totalPages = Math.ceil(attendees.length / 10)
+        return url.searchParams.has("search") ? String(url.searchParams.get("search")) : ""
+    })
 
-    function onSearchInputChanged(event: ChangeEvent<HTMLInputElement>) {
-        setSearchInput(event.target.value)
+    const [page, setPage] = useState(() => {
+        const url = new URL(window.location.toString())
+
+        return url.searchParams.has("page") ? Number(url.searchParams.get("page")) : 1
+    });
+
+    const [attendees, setAttendees] = useState<Attendee[]>([])
+
+    const [total, setTotal] = useState(0)
+
+    const totalPages = Math.ceil(total / 10)
+
+    useEffect(() => {
+
+        const url = new URL("http://localhost:3333/events/9e9bd979-9d10-4915-b339-3786b1634f33/attendees");
+
+        url.searchParams.set("pageIndex", `${page - 1}`)
+
+        if (searchInput.length > 0)
+            url.searchParams.set("query", `${searchInput}`)
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => { setAttendees(data.attendees); setTotal(data.totalAttendees) })
+    }, [page, searchInput])
+
+
+    function setCurrentPage(pageNumber: number) {
+        const url = new URL(window.location.toString())
+
+        url.searchParams.set('page', `${pageNumber}`)
+
+        window.history.pushState({}, "", url.toString())
+
+        setPage(pageNumber)
     }
 
-    function goToFirstPage() { setPage(1) }
+    function setCurrentSearch(search: string) {
+        const url = new URL(window.location.toString())
 
-    function goToLastPage() { setPage(totalPages) }
+        url.searchParams.set('search', `${search}`)
 
-    function goToNextPage() { setPage(page + 1) }
+        window.history.pushState({}, "", url.toString())
 
-    function goToPreviousPage() { setPage(page - 1) }
+        setSearchInput(search)
+    }
 
+    function onSearchInputChanged(event: ChangeEvent<HTMLInputElement>) {
+
+        setCurrentSearch(event.target.value)
+
+        setCurrentPage(1)
+    }
+
+    function goToFirstPage() { setCurrentPage(1) }
+    function goToLastPage() { setCurrentPage(totalPages) }
+    function goToNextPage() { setCurrentPage(page + 1) }
+    function goToPreviousPage() { setCurrentPage(page - 1) }
 
     return (
         <div className="flex flex-col gap-4">
             <div className="flex gap-3 items-center">
                 <h1 className="text-2xl font-bolds">Participantes</h1>
-                <div className="px-3 py-1.5 border border-white/10 rounded-lg text-sm w-72 flex items-center gap-3">
+                <div className="px-3 border border-white/10 rounded-lg text-sm w-72 flex items-center gap-3">
                     <Search className="size-4 text-emerald-300" />
-                    <input onChange={onSearchInputChanged} className="bg-transparent flex-1 border-none outline-none" placeholder="Buscar participante..." />
+                    <input onChange={onSearchInputChanged} value={searchInput} className="bg-transparent py-1 flex-1 border-none outline-none focus:ring-0" placeholder="Buscar participante..." />
                 </div>
             </div>
 
@@ -57,7 +111,8 @@ export function AttendeeList() {
                 </thead>
                 <tbody>
                     {
-                        attendees.slice((page - 1) * 10, page * 10).map(attendee => {
+                        //attendees.slice((page - 1) * 10, page * 10).map(attendee => {
+                        attendees.map(attendee => {
                             return (
                                 <TableRow key={attendee.id}>
                                     <TableCell>
@@ -70,8 +125,14 @@ export function AttendeeList() {
                                             <span className="">{attendee.email}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{dayjs().toNow(attendee.createdAt)}</TableCell>
-                                    <TableCell>{dayjs().toNow(attendee.checkedInAt)}</TableCell>
+                                    <TableCell>
+                                        {dayjs(attendee.createdAt).toNow()}
+                                    </TableCell>
+                                    <TableCell>
+                                        {attendee.checkedInAt == null ?
+                                            <span className="text-zinc-500">Não fez check-in</span> :
+                                            dayjs(attendee.checkedInAt).toNow()}
+                                    </TableCell>
                                     <TableCell>
                                         <IconButton transparent>
                                             <MoreHorizontal className="size-4" />
@@ -85,7 +146,7 @@ export function AttendeeList() {
                 <tfoot >
                     <tr>
                         <TableCell colSpan={3}>
-                            Mostrando {page * 10} de {attendees.length} itens
+                            Mostrando {attendees.length + ((page - 1) * 10)} de {total} itens
                         </TableCell>
                         <TableCell colSpan={3} className="text-right">
                             <div className="inline-flex items-center gap-8">

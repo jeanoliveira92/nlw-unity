@@ -1,5 +1,10 @@
 import { faker } from "@faker-js/faker"
 
+
+/*
+    Removido do codigo, foi apenas para exemplo sem API
+*/
+
 export const attendees = Array.from({ length: 212}).map(() => {
     return ({
         id: faker.number.int({ min: 10000, max: 20000 }),
